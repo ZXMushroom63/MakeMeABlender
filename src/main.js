@@ -3,13 +3,7 @@ const { localDataDir, join } = window.__TAURI__.path;
 const { Command } = window.__TAURI__.shell;
 const { mkdir } = window.__TAURI__.fs;
 
-// List of pull request IDs you want to merge
-const pullRequestIds = [1234, 5678, 9012];
 
-// URL of the Blender repository
-const repoUrl = "https://projects.blender.org/blender/blender.git";
-
-// Directory to clone the repo into
 const appDir = await join(await localDataDir(), 'makemeablender');
 try {
   await mkdir(appDir);
@@ -56,7 +50,7 @@ function extractPRsFromPage(page, outlist, idx) {
       console.error("During PR extraction loop: ", error);
     }
   });
-  logToConsole("Extracted " + prs.length + " pull request indexes fromn page " + idx + ".");
+  logToConsole("Extracted " + prs.length + " pull request indexes from page " + idx + ".");
 }
 async function indexPullRequests() {
   logToConsole("Preparing to index pull requests from projects.blender.org");

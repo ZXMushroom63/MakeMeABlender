@@ -1,4 +1,4 @@
-const { localDataDir, join } = window.__TAURI__.path;
+var { localDataDir, join } = window.__TAURI__.path;
 function convertString(input) {
     return input.toLowerCase().replace(/[^a-z0-9]/g, '_');
 }
