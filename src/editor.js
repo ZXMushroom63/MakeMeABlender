@@ -8,6 +8,7 @@ function updateEditor() {
     var idx = globalThis.selectedIndex;
     var inst = getInstallations()[idx];
     globalThis.__liveInst = inst;
+    console.log(inst.branch);
     document.querySelector("#branchselect").value = inst.branch;
     document.querySelector("#inst_id").innerText = inst.name;
     refreshPullRequests(document.querySelector("#branchselect").value, document.querySelector("#prsearch").value);
@@ -34,6 +35,7 @@ function refreshPullRequests(branch, searchQuery) {
     var _inst = getInstallations()[globalThis.selectedIndex];
     var prcontainer = document.querySelector("#prcontainer");
     prcontainer.innerHTML = "";
+    PRs.sort((a, b) => {return _inst.features.includes(b.id) - _inst.features.includes(a.id)});
     PRs.forEach(pr => {
         //on pull step, make sure to only fetch pull requests relevant to current branch
         if (pr.branch !== branch) {

@@ -1,6 +1,7 @@
 const { invoke } = window.__TAURI__.core;
 const { localDataDir, join } = window.__TAURI__.path;
 const { Command } = window.__TAURI__.shell;
+const { mkdir } = window.__TAURI__.fs;
 
 // List of pull request IDs you want to merge
 const pullRequestIds = [1234, 5678, 9012];
@@ -10,7 +11,11 @@ const repoUrl = "https://projects.blender.org/blender/blender.git";
 
 // Directory to clone the repo into
 const appDir = await join(await localDataDir(), 'makemeablender');
-console.log(appDir);
+try {
+  await mkdir(appDir);
+} catch (error) {
+  
+}
 window.enableCORSFetch(true);
 var branches = window.branches = (await(await fetch("https://projects.blender.org/blender/blender/branches/list")).json()).results;
 document.querySelector("#new").addEventListener("click", () => {
@@ -24,6 +29,7 @@ branches.forEach(branch => {
   option.innerText = branch;
   branchselect.appendChild(option);
 });
+updateEditor();
 function extractPRsFromPage(page, outlist, idx) {
   var prs = page.querySelectorAll("#issue-list div.flex-item");
   prs.forEach(elem => {
