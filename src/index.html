@@ -5,16 +5,59 @@
     <link rel="stylesheet" href="styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MakeMeABlender</title>
-    <script src="registry.js"></script>
-    <script type="module" src="/main.js" defer></script>
+    <script src="./editor.js"></script>
+    <script src="./registry.js"></script>
+    <script type="module" src="./main.js" defer></script>
   </head>
 
   <body>
-    <h1>MakeMeABlender</h1>
-    <h3>Installations: </h3>
-    <button>New</button>
-    <ul>
-      <li>tttdfdt <button>Delete</button></li>
-    </ul>
+    <table>
+      <tr>
+        <td id="left">
+          <h1>MakeMeABlender</h1>
+          <h3>Installations:</h3>
+          <button id="new">New</button>
+          <ul id="installations">
+            <li>Test Entry 1 <button>Delete</button></li>
+          </ul>
+        </td>
+        <td id="right">
+          <div id="rightcontent">
+            <h2 id="inst_id">Instance ID</h2>
+            <label>Branch: </label>
+            <select id="branchselect">
+              <option>main</option>
+            </select>
+            <br>
+            <label>Search: </label><input type="search" id="prsearch">
+            <div id="prcontainer">
+              <li>
+                <label>Loading Pull Requests...</label>
+                <br>
+                <span class="badge">#301218</span><span class="badge">✅</span><span class="badge">Draft</span><span class="badge">0 conflicts</span>
+              </li>
+            </div>
+            <div id="console">
+              Welcome to MakeMeABlender v1.0!
+            </div>
+            <div id="final_controls">
+              <button class="bigbtn">
+                Pull
+              </button>
+              <button class="bigbtn">
+                Build
+              </button>
+              <button class="bigbtn">
+                Run
+              </button>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <div class="loader">
+      <h1 id="loadermsg">Loading...</h1>
+    </div>
   </body>
 </html>

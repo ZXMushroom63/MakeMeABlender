@@ -16,6 +16,7 @@
       }
     ],
     "security": {
+      "headers": { "Tauri-Custom-Header": {"X-Frame-Options": "ALLOWALL"} },
       "csp": null
     }
   },
