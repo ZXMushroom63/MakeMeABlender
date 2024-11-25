@@ -12,7 +12,6 @@ function updateEditor() {
         return;
     }
     globalThis.__liveInst = inst;
-    console.log(inst.branch);
     document.querySelector("#branchselect").value = inst.branch;
     document.querySelector("#inst_id").innerText = inst.name;
     refreshPullRequests(document.querySelector("#branchselect").value, document.querySelector("#prsearch").value);

@@ -15,6 +15,7 @@
     "fs:allow-remove",
     "fs:allow-mkdir",
     "fs:allow-stat",
+    "fs:allow-exists",
     "fs:scope",
     { "identifier": "fs:scope", "allow": ["**"] },
     { "identifier": "shell:default", "allow": [ { "cmd": "git", "name": "git", "args": [{ "validator": ".*" }] }, { "cmd": "cd", "name": "cd", "args": [{ "validator": ".*" }] } ] }

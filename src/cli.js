@@ -1,10 +1,10 @@
 const invoke = window.__TAURI__.core.invoke;
-window.__TAURI__.event.listen("stdout", (data)=>{
+window.__TAURI__.event.listen("stdout", (data) => {
     logToConsole(data.payload.message);
 });
 async function execCommand(command, args, cd) {
     var decoder = new TextDecoder("utf-8")
-    const result = await invoke('run_command', { command: command, args: args, dir: cd});
+    const result = await invoke('run_command', { command: command, args: args, dir: cd });
     return {
         status: result.status,
         stdout: decoder.decode(new Uint8Array(result.stdout)),
@@ -33,15 +33,15 @@ async function gitpull() {
     try {
         await window.__TAURI__.fs.remove(appDir, { recursive: true });
     } catch (error) {
-        
+        console.log(error);
     }
     const totalDir = await join(await localDataDir(), 'makemeablender');
     logToConsole("Deleted previous pull.");
     logToConsole("Preparing to clone...");
     setLoadInfo("Cloning repository...");
     var ssl = checkSSL() ? [] : ["-c", "http.sslVerify=false"];
-    const cloneCommand = await execCommand('git', ssl.concat(['clone', '--branch', branch, '--depth=1', '--recurse-submodules', repoUrl, folder]), totalDir);
-    await execCommand('cmd', ssl.concat(['/C', '.\\build_files\\windows\\lib_update.cmd']), appDir);
+    const cloneCommand = await execCommand('cmd', ['/C', 'start', 'cmd.exe', '.', '/C', 'git'].concat(ssl.concat(['clone', '--branch', branch, '--depth=1', '--recurse-submodules', repoUrl, folder])), totalDir);
+
     setLoadInfo("Pulling features...");
     for (const prNumber of pullrequests) {
         logToConsole("Fetching #" + prNumber + "...");
@@ -60,19 +60,60 @@ async function makebuild() {
     var folder = instance.name;
 
     var { localDataDir, join } = window.__TAURI__.path;
-    var { Command } = window.__TAURI__.shell;
 
     const appDir = await join(await localDataDir(), 'makemeablender', instance.name);
+    const totalDir = await join(await localDataDir(), 'makemeablender');
     const buildCommand = await execCommand('cmd', ['/C', 'start', 'cmd.exe', '.', '/C', 'make.bat'], appDir);
     if (buildCommand.stdout > 0) {
         logToConsole(buildCommand.stdout);
-    } else {
+    } else if (buildCommand.stderr > 0) {
         logToConsole(buildCommand.stderr);
         logToConsole("Have you pulled the repo yet?");
     }
+    var blenderDirectory = (await __TAURI__.fs.readDir(totalDir)).find((dir) => {
+        return dir.isDirectory && !dir.isFile && !dir.isSymlink && dir.name.toLowerCase().startsWith("build_") && dir.name.toLowerCase().endsWith("_release");
+    });
+    if (!blenderDirectory) {
+        logToConsole("Build directory not found?");
+    } else {
+        setLoadInfo("Moving binaries...");
+        logToConsole("Moving binaries...");
+        const binDir = await join(await localDataDir(), 'makemeablender', blenderDirectory.name);
+        const outDir = await join(await localDataDir(), 'makemeablender', instance.name, 'compiled_binary');
+        const moveCommand = await execCommand('cmd', ['/C', 'move', '/Y', binDir, outDir], totalDir);
+        if (moveCommand.stdout > 0) {
+            logToConsole(moveCommand.stdout);
+        } else if (moveCommand.stderr > 0) {
+            logToConsole(moveCommand.stderr);
+        }
+        logToConsole("Moved binary. Ready to execute!");
+    }
+    document.documentElement.classList.remove("loading");
+}
+async function execbuild() {
+    setLoadInfo("Running blender...");
+    var instance = getInstallations()[globalThis.selectedIndex];
+    document.documentElement.classList.add("loading")
+    var { localDataDir, join } = window.__TAURI__.path;
+    const binaryDir = await join(await localDataDir(), 'makemeablender', instance.name, 'compiled_binary', 'bin');
+    if (await __TAURI__.fs.exists(binaryDir)) {
+        var targetFolder = (await __TAURI__.fs.readDir(binaryDir)).find(x=>x.isDirectory);
+        if (targetFolder) {
+            const blenderDir = await join(await localDataDir(), 'makemeablender', instance.name, 'compiled_binary', 'bin', targetFolder.name);
+            logToConsole("Starting Blender...");
+            execCommand('cmd', ['/C', 'start', 'blender.exe'], blenderDir).then(res => {
+                logToConsole("Blender process exited!");
+            });
+        }
+    } else {
+        logToConsole("Build directory not found!");
+    }
+    
+
     document.documentElement.classList.remove("loading");
 }
 window.addEventListener("load", () => {
     document.querySelector("#gitpull").addEventListener("click", gitpull);
     document.querySelector("#makebuild").addEventListener("click", makebuild);
+    document.querySelector("#execbuild").addEventListener("click", execbuild);
 });

@@ -73,7 +73,7 @@ async function indexPullRequests() {
   return OUT;
 }
 
-var PRs = []
+var PRs = [];
 var last_pr_fetch = localStorage.getItem("cache_store_date");
 var elapsedTime = Date.now() - parseInt(last_pr_fetch || 0);
 var maxElapsedTime = 240 * 60 * 1000; //240 minutes
@@ -97,3 +97,26 @@ if (globalThis.__liveInst) {
 } else {
   refreshPullRequests("main", "");
 }
+
+document.querySelector("#forceindex").addEventListener("click", ()=>{
+  localStorage.setItem("cache_store_date", 0);
+  location.reload();
+});
+
+document.querySelector("#cleanup").addEventListener("click", async ()=>{
+  setLoadInfo("Cleaning up application folder...");
+  document.documentElement.classList.add("loading");
+  var names = getInstallations().map((x)=>{return x.name.toLowerCase()});
+  var { localDataDir, join } = window.__TAURI__.path;
+  const totalDir = await join(await localDataDir(), 'makemeablender');
+  var badFiles = (await __TAURI__.fs.readDir(totalDir)).filter((f) => {
+    return !names.includes(f.name.toLowerCase());
+  });
+  for (let i = 0; i < badFiles.length; i++) {
+    const file = badFiles[i];
+    const deletePath = await join(await localDataDir(), 'makemeablender', file);
+    logToConsole("Deleting " + file + "...");
+    await window.__TAURI__.fs.remove(deletePath, { recursive: true });
+  }
+  document.documentElement.classList.remove("loading");
+});
