@@ -76,7 +76,7 @@ async function indexPullRequests() {
 var PRs = []
 var last_pr_fetch = localStorage.getItem("cache_store_date");
 var elapsedTime = Date.now() - parseInt(last_pr_fetch || 0);
-var maxElapsedTime = 120 * 60 * 1000; //120 minutes
+var maxElapsedTime = 240 * 60 * 1000; //240 minutes
 if (elapsedTime > maxElapsedTime) {
   setLoadInfo("Indexing pull requests...");
   document.documentElement.classList.add("loading");

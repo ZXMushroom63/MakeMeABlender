@@ -7,6 +7,10 @@ function updateEditor() {
     document.querySelector("#rightcontent").classList.remove("hidden");
     var idx = globalThis.selectedIndex;
     var inst = getInstallations()[idx];
+    if (!inst) {
+        document.querySelector("#rightcontent").classList.add("hidden");
+        return;
+    }
     globalThis.__liveInst = inst;
     console.log(inst.branch);
     document.querySelector("#branchselect").value = inst.branch;
@@ -33,6 +37,9 @@ function refreshPullRequests(branch, searchQuery) {
         return;
     }
     var _inst = getInstallations()[globalThis.selectedIndex];
+    if (!_inst) {
+        return;
+    }
     var prcontainer = document.querySelector("#prcontainer");
     prcontainer.innerHTML = "";
     PRs.sort((a, b) => {return _inst.features.includes(b.id) - _inst.features.includes(a.id)});
