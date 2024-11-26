@@ -1,5 +1,7 @@
-function newsRead() {
-    document.querySelector("#news").innerText = "News";
+function newsRead(preserveUi) {
+    if (!preserveUi) {
+        document.querySelector("#news").innerText = "News";
+    }
     localStorage.setItem("last_news_read", Date.now());
 }
 window.enableCORSFetch(true);
@@ -44,6 +46,7 @@ async function updateNews() {
             unreadCount++;
             try {
                 __TAURI__.notification.sendNotification(title.innerText);
+                newsRead(true);
             } catch(e) {
                 
             }
