@@ -1,8 +1,8 @@
 #[derive(serde::Serialize)]
 struct Output {
-  stdout: Vec<u8>,
-  stderr: Vec<u8>,
-  status: i32,
+    stdout: Vec<u8>,
+    stderr: Vec<u8>,
+    status: i32,
 }
 
 #[tauri::command]
@@ -24,22 +24,21 @@ async fn run_command(command: String, args: Vec<String>, dir: Option<String>) ->
                 stderr: v.stderr,
                 status: v.status.code().unwrap_or_default(),
             };
-        },
+        }
         Err(e) => {
             return Output {
                 stdout: Vec::new(),
                 stderr: e.to_string().as_bytes().to_vec(),
                 status: e.raw_os_error().unwrap_or_default(),
             };
-        },
+        }
     }
-    
 }
-
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_cors_fetch::init())
         .plugin(tauri_plugin_fs::init())

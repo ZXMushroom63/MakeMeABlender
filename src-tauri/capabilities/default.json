@@ -2,7 +2,9 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
-  "windows": ["main"],
+  "windows": [
+    "main"
+  ],
   "permissions": [
     "core:default",
     "shell:allow-execute",
@@ -17,7 +19,35 @@
     "fs:allow-stat",
     "fs:allow-exists",
     "fs:scope",
-    { "identifier": "fs:scope", "allow": ["**"] },
-    { "identifier": "shell:default", "allow": [ { "cmd": "git", "name": "git", "args": [{ "validator": ".*" }] }, { "cmd": "cd", "name": "cd", "args": [{ "validator": ".*" }] } ] }
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        "**"
+      ]
+    },
+    {
+      "identifier": "shell:default",
+      "allow": [
+        {
+          "cmd": "git",
+          "name": "git",
+          "args": [
+            {
+              "validator": ".*"
+            }
+          ]
+        },
+        {
+          "cmd": "cd",
+          "name": "cd",
+          "args": [
+            {
+              "validator": ".*"
+            }
+          ]
+        }
+      ]
+    },
+    "notification:default"
   ]
 }

@@ -114,9 +114,10 @@ document.querySelector("#cleanup").addEventListener("click", async ()=>{
   });
   for (let i = 0; i < badFiles.length; i++) {
     const file = badFiles[i];
-    const deletePath = await join(await localDataDir(), 'makemeablender', file);
-    logToConsole("Deleting " + file + "...");
+    const deletePath = await join(await localDataDir(), 'makemeablender', file.name);
+    logToConsole("Deleting " + file.name + "...");
     await window.__TAURI__.fs.remove(deletePath, { recursive: true });
   }
+  logToConsole("Cleaned up application folder!");
   document.documentElement.classList.remove("loading");
 });

@@ -16,6 +16,9 @@ const repoUrl = "https://projects.blender.org/blender/blender.git";
 function checkSSL() {
     return !document.querySelector("#ssl").checked;
 }
+function getFastPull() {
+    return document.querySelector("#fastpull").checked;
+}
 async function gitpull() {
     var instance = getInstallations()[globalThis.selectedIndex];
     var pullrequests = PRs.filter(x => {
@@ -27,27 +30,38 @@ async function gitpull() {
     var { localDataDir, join } = window.__TAURI__.path;
 
     setLoadInfo("Clearing cache...");
-    document.documentElement.classList.add("loading")
-    logToConsole("Deleting previous pull...");
+    document.documentElement.classList.add("loading");
+    
     const appDir = await join(await localDataDir(), 'makemeablender', instance.name);
-    try {
-        await window.__TAURI__.fs.remove(appDir, { recursive: true });
-    } catch (error) {
-        console.log(error);
+    const gitDir = await join(await localDataDir(), 'makemeablender', instance.name, ".git");
+    var ssl = checkSSL() ? [] : ["-c", "http.sslVerify=false", "-c", "http.sslbackend=schannel"];
+    if (getFastPull() && (await __TAURI__.fs.exists(gitDir))) {
+        setLoadInfo("Resetting local to head...");
+        logToConsole("Resetting to master...");
+        const fetchRemoteCommand = await execCommand('cmd', ['/C', 'start', 'cmd.exe', '.', '/C', 'git'].concat(ssl.concat(['fetch', '--depth=1', 'origin', branch])), appDir);
+        const resetCommand = await execCommand('git', ssl.concat(['reset', '--hard', 'origin/'+branch]), appDir);
+        logToConsole("Local up-to-date.");
+    } else {
+        logToConsole("Deleting previous pull...");
+        try {
+            await window.__TAURI__.fs.remove(appDir, { recursive: true });
+        } catch (error) {
+            console.log(error);
+        }
+        const totalDir = await join(await localDataDir(), 'makemeablender');
+        logToConsole("Deleted previous pull.");
+        logToConsole("Preparing to clone...");
+        setLoadInfo("Cloning repository...");
+        const cloneCommand = await execCommand('cmd', ['/C', 'start', 'cmd.exe', '.', '/C', 'git'].concat(ssl.concat(['clone', '--branch', branch, '--depth=1', '--recurse-submodules', repoUrl, folder])), totalDir);
     }
-    const totalDir = await join(await localDataDir(), 'makemeablender');
-    logToConsole("Deleted previous pull.");
-    logToConsole("Preparing to clone...");
-    setLoadInfo("Cloning repository...");
-    var ssl = checkSSL() ? [] : ["-c", "http.sslVerify=false"];
-    const cloneCommand = await execCommand('cmd', ['/C', 'start', 'cmd.exe', '.', '/C', 'git'].concat(ssl.concat(['clone', '--branch', branch, '--depth=1', '--recurse-submodules', repoUrl, folder])), totalDir);
 
     setLoadInfo("Pulling features...");
     for (const prNumber of pullrequests) {
         logToConsole("Fetching #" + prNumber + "...");
         const fetchCommand = await execCommand('git', ssl.concat(['fetch', '--allow-unrelated-histories', '--depth=1', 'origin', `pull/${prNumber}/head:pr-${prNumber}`]), appDir);
         logToConsole("Merging #" + prNumber + "...");
-        const mergeCommand = await execCommand('git', ssl.concat(['merge', '--allow-unrelated-histories', `pr-${prNumber}`]), appDir);
+        const mergeCommand = await execCommand('git', ssl.concat(['merge', '-X', 'theirs', '--allow-unrelated-histories', `pr-${prNumber}`]), appDir);
+        logToConsole(mergeCommand.stdout);
     }
     logToConsole("Pull complete!");
     document.documentElement.classList.remove("loading");

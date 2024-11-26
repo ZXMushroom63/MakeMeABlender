@@ -5,6 +5,8 @@
     <link rel="stylesheet" href="styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MakeMeABlender</title>
+    <script src="./settings.js"></script>
+    <script src="./news.js"></script>
     <script src="./editor.js"></script>
     <script src="./registry.js"></script>
     <script type="module" src="./main.js" defer></script>
@@ -21,6 +23,9 @@
           <button id="forceindex">Clear Cache</button>
           <button id="cleanup">Clean Up</button>
           <button id="news">News</button>
+          <button id="settings">Settings</button>
+          <button id="fund" onclick="window.open('https:\/\/fund.blender.org')">Donate</button>
+
           <ul id="installations">
             <li>Test Entry 1 <button>Delete</button></li>
           </ul>
@@ -45,7 +50,11 @@
               Welcome to MakeMeABlender v1.0!
             </div>
             <div id="final_controls">
-              <span class="badge">
+              <span class="badge" style="border: 1px solid white;">
+                Fast Pull
+                <input type="checkbox" id="fastpull" checked>
+              </span>
+              <span class="badge" style="border: 1px solid white;">
                 No SSL
                 <input type="checkbox" id="ssl">
               </span>
@@ -64,7 +73,28 @@
         </td>
       </tr>
     </table>
-
+    <div id="news_panel" class="hidden">
+      <h2>News & Updates</h2>
+      <button onclick="this.parentElement.classList.add('hidden');newsRead();">Close</button>
+      <div id="news_content">
+        <li>
+          <span>Loading news feed...</span>
+        </li>
+      </div>
+    </div>
+    <div id="settings_panel" class="hidden">
+      <h2>Settings</h2>
+      <button onclick="this.parentElement.classList.add('hidden')">Close</button>
+      <br><br>
+      <label>Background News Updates: </label><input type="checkbox" id="backgroundNews">
+      <br>
+      <label>News Update Interval (s): </label><input type="number" min="120" value="-1" id="newsUpdateInterval">
+      <br>
+      <label>Send News Notifications: </label><input type="checkbox" id="sendNotifications">
+      <br><br>
+      <button onclick="location.reload()">Apply (resets UI)</button>
+      <br><br><span class="badge">Made by ZXMushroom63</span>
+    </div>
     <div class="loader">
       <h1 id="loadermsg">Loading...</h1>
     </div>

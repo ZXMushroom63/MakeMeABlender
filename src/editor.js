@@ -54,7 +54,7 @@ function refreshPullRequests(branch, searchQuery) {
         if (_inst.features.includes(pr.id)) {
             li.classList.add("activated");
         }
-        li.innerHTML += `<label>${pr.title}</label><br><span class="badge" title="Pull request ID" onclick="window.open('https://projects.blender.org/blender/blender/pulls/${pr.id}')">#${pr.id}</span>`;
+        li.innerHTML += `<label>${pr.title}</label><br><span class="badge" title="Pull request ID" onclick="event.stopPropagation();window.open('https://projects.blender.org/blender/blender/pulls/${pr.id}')">#${pr.id}</span>`;
         if (pr.working) {
             li.innerHTML += `<span class="badge" title="All tests passed">✅</span>`;
         }
