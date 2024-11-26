@@ -127,6 +127,7 @@ html.loading .loader {
   top: 0;
   left: 0;
   z-index: 1;
+  overflow-y: auto;
   background-color: rgba(25,25,23);
 }
 .bigbtn {
