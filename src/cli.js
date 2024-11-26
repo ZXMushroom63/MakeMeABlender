@@ -95,8 +95,7 @@ async function makebuild() {
         logToConsole("Moving binaries...");
         const binDir = await join(await localDataDir(), 'makemeablender', blenderDirectory.name);
         const outDir = await join(await localDataDir(), 'makemeablender', instance.name, 'compiled_binary');
-        const moveCommand = await execCommand('cmd', ['/C', 'start', 'cmd.exe', '.', '/K', 'move', '/Y', binDir, outDir], totalDir);
-        //const moveCommand = await execCommand('cmd', ['/C', 'move', '/Y', binDir, outDir], totalDir);
+        const moveCommand = await execCommand('cmd', ['/C', 'move', '/Y', binDir, outDir], totalDir);
         if (moveCommand.stdout > 0) {
             logToConsole(moveCommand.stdout);
         } else if (moveCommand.stderr > 0) {
