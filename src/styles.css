@@ -218,12 +218,12 @@ input:invalid {
 #news_content {
   margin-top: 3rem;
 }
-#news_content li {
+#news_content li, #libs_panel li {
   padding: 1rem;
   width: 90vw;
   position: relative;
   overflow: hidden;
-  left: 2.5vw;
+  left: calc(5vw - 1.5rem);
 }
 #news_content li a {
   font-size: 1.25rem;
@@ -235,4 +235,22 @@ input:invalid {
   white-space: nowrap;
   user-select: contain;
   text-decoration: underline;
+  cursor: pointer;
+}
+#libs_panel {
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  background-color: rgba(25,25,23);
+  overflow-y: auto;
+}
+#libs_panel h1 {
+  width: 100%;
+}
+#libs_panel li, #libs_panel li * {
+  cursor: pointer;
 }

@@ -1,6 +1,6 @@
 function logToConsole(txt) {
     var c = document.querySelector("#console");
-    c.innerText += "\n" + txt;
+    c.innerText += "\r\n" + txt;
     c.scrollTop = c.scrollHeight;
 }
 function updateEditor() {

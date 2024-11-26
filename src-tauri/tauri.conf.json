@@ -10,7 +10,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "makemeablender",
+        "title": "Make Me A Blender",
         "width": 800,
         "height": 600
       }

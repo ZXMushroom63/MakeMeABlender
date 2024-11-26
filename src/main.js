@@ -1,7 +1,7 @@
-const { invoke } = window.__TAURI__.core;
-const { localDataDir, join } = window.__TAURI__.path;
-const { Command } = window.__TAURI__.shell;
-const { mkdir } = window.__TAURI__.fs;
+var { invoke } = window.__TAURI__.core;
+var { localDataDir, join } = window.__TAURI__.path;
+var { Command } = window.__TAURI__.shell;
+var { mkdir } = window.__TAURI__.fs;
 
 
 const appDir = await join(await localDataDir(), 'makemeablender');
@@ -9,6 +9,15 @@ try {
   await mkdir(appDir);
 } catch (error) {
   
+}
+if ((await execCommand("git", ["--version"], appDir)).stderr === "program not found") {
+  await missingLibs();
+}
+if ((await execCommand("cmake", ["--version"], appDir)).stderr === "program not found") {
+  await missingLibs();
+}
+if ((await execCommand("python", ["--version"], appDir)).stderr === "program not found") {
+  await missingLibs();
 }
 window.enableCORSFetch(true);
 var branches = window.branches = (await(await fetch("https://projects.blender.org/blender/blender/branches/list")).json()).results;
@@ -62,10 +71,12 @@ async function indexPullRequests() {
   var lastPage = parseInt((new URL(page1.querySelector(".item.navigation .gitea-double-chevron-right").parentElement.href, "https://projects.blender.org/")).searchParams.get("page"));
   logToConsole("Indexing pages " + startingPage + " to " + lastPage);
   extractPRsFromPage(page1, OUT, 1);
+  setLoadInfo(`Indexing pull requests (1/${lastPage})...`);
   for (let pageIdx = startingPage + 1; pageIdx < lastPage + 1; pageIdx++) {
     var pageData = (await (await fetch("https://projects.blender.org/blender/blender/pulls?page="+pageIdx)).text());
     var page = parser.parseFromString(pageData, "text/html");
     extractPRsFromPage(page, OUT, pageIdx);
+    setLoadInfo(`Indexing pull requests (${pageIdx}/${lastPage})...`);
   }
   localStorage.setItem("cache_store", JSON.stringify(OUT));
   localStorage.setItem("cache_store_date", Date.now());

@@ -82,7 +82,8 @@ async function makebuild() {
         logToConsole(buildCommand.stdout);
     } else if (buildCommand.stderr > 0) {
         logToConsole(buildCommand.stderr);
-        logToConsole("Have you pulled the repo yet?");
+        logToConsole("BUILD COMMAND FAILED!");
+        logToConsole("Make sure you've pulled the repo and installed required libraries and software.");
     }
     var blenderDirectory = (await __TAURI__.fs.readDir(totalDir)).find((dir) => {
         return dir.isDirectory && !dir.isFile && !dir.isSymlink && dir.name.toLowerCase().startsWith("build_") && dir.name.toLowerCase().endsWith("_release");
@@ -94,7 +95,8 @@ async function makebuild() {
         logToConsole("Moving binaries...");
         const binDir = await join(await localDataDir(), 'makemeablender', blenderDirectory.name);
         const outDir = await join(await localDataDir(), 'makemeablender', instance.name, 'compiled_binary');
-        const moveCommand = await execCommand('cmd', ['/C', 'move', '/Y', binDir, outDir], totalDir);
+        const moveCommand = await execCommand('cmd', ['/C', 'start', 'cmd.exe', '.', '/K', 'move', '/Y', binDir, outDir], totalDir);
+        //const moveCommand = await execCommand('cmd', ['/C', 'move', '/Y', binDir, outDir], totalDir);
         if (moveCommand.stdout > 0) {
             logToConsole(moveCommand.stdout);
         } else if (moveCommand.stderr > 0) {

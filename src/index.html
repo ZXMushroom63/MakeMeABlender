@@ -9,8 +9,9 @@
     <script src="./news.js"></script>
     <script src="./editor.js"></script>
     <script src="./registry.js"></script>
-    <script type="module" src="./main.js" defer></script>
     <script src="./cli.js"></script>
+    <script src="./missing.js"></script>
+    <script type="module" src="./main.js" defer></script>
   </head>
 
   <body>
@@ -25,6 +26,7 @@
           <button id="news">News</button>
           <button id="settings">Settings</button>
           <button id="fund" onclick="window.open('https:\/\/fund.blender.org')">Donate</button>
+          <button id="libraries" onclick="globalThis.ignoreMissingLibs = false; missingLibs();">Libraries</button>
 
           <ul id="installations">
             <li>Test Entry 1 <button>Delete</button></li>
@@ -97,6 +99,38 @@
     </div>
     <div class="loader">
       <h1 id="loadermsg">Loading...</h1>
+    </div>
+    <div class="hidden" id="libs_panel">
+      <h1 id="loadermsg">Something's missing.</h1>
+      Restart program when complete. <button onclick="globalThis.ignoreMissingLibs = true">I don't care</button>
+      <br>
+      <h3>Required</h3>
+      <li class="cmdcheck_git" onclick="window.open('https:\/\/git-scm.com/downloads/win')">
+        Git - STATUS_PENDING
+      </li><br>
+      <li class="cmdcheck_cmake" onclick="window.open('https:\/\/cmake.org/download/')">
+        CMake - STATUS_PENDING
+      </li><br>
+      <li class="cmdcheck_python" onclick="window.open('https:\/\/www.python.org/downloads/')">
+        CPython 3 - STATUS_PENDING
+      </li><br>
+      <li onclick="window.open('https:\/\/aka.ms/vs/17/release/vs_BuildTools.exe')">
+        Desktop Development with C++
+        <br>
+        <small>
+          - To install, click on this widget.<br>
+          - Open vs_BuildTools.exe, and select 'Desktop Development with C++'<br>
+          - Press 'Install'
+        </small>
+      </li>
+      <br><br>
+      <h3>Optional</h3>
+      <li class="cmdcheck_nvcc" onclick="window.open('https:\/\/developer.nvidia.com/cuda-downloads')">
+        CUDA - STATUS_PENDING
+      </li><br>
+      <li class="libs_optix" onclick="window.open('https:\/\/developer.nvidia.com/designworks/optix/download')">
+        OptiX SDK - STATUS_PENDING
+      </li>
     </div>
   </body>
 </html>

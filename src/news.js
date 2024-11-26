@@ -24,9 +24,10 @@ async function updateNews() {
         var titleText = "";
         if (isPr) {
             let desc = item.querySelector("description").textContent.replace(/^([0-9]+\#)/, "");
-            titleText = item.querySelector("author").textContent + " made pull request: " + desc.substring(0, desc.length - 2);
+            titleText = item.querySelector("author").textContent + " made pull request: " + desc.substring(0, desc.length - 1);
         } else {
-            titleText = item.querySelector("author").textContent + " pushed commit: " + item.querySelector("title").textContent;
+            var commitBranch = [...parser.parseFromString(item.querySelector("title").textContent, "text/html").querySelectorAll("a")].find(e => e.href.includes("/branch/")).textContent.trim();
+            titleText = item.querySelector("author").textContent + ` pushed to ${commitBranch}: ` + (item.querySelector("description").textContent.split("\n")[1] || "").trim();
         }
         var outFeedItem = document.createElement("li");
         var pubTime = (new Date(item.querySelector("pubDate").textContent)).getTime();
@@ -78,6 +79,7 @@ if (settings.backgroundNews) {
 }
 window.addEventListener("load", ()=>{
     document.querySelector("#news").addEventListener("click", ()=>{
+        newsRead();
         document.querySelector("#news_panel").classList.remove("hidden");
     });
 });
