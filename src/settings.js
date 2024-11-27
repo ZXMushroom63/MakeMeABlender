@@ -6,7 +6,7 @@ function updateSettings(s) {
 }
 updateSettings(settings);
 
-window.addEventListener("load", ()=>{
+window.addEventListener("load", async ()=>{
     document.querySelector("#settings").addEventListener("click", ()=>{
         document.querySelector("#settings_panel").classList.remove("hidden");
     });
@@ -28,4 +28,7 @@ window.addEventListener("load", ()=>{
         localStorage.setItem("background_news", document.querySelector("#backgroundNews").checked);
         updateSettings();
     });
+
+    var { localDataDir, join } = window.__TAURI__.path;
+    document.querySelector("#fileStoreLocation").innerText = await join(await installationDir(), 'makemeablender');
 });

@@ -1,4 +1,4 @@
-const invoke = window.__TAURI__.core.invoke;
+var invoke = window.__TAURI__.core.invoke;
 window.__TAURI__.event.listen("stdout", (data) => {
     logToConsole(data.payload.message);
 });
@@ -10,6 +10,11 @@ async function execCommand(command, args, cd) {
         stdout: decoder.decode(new Uint8Array(result.stdout)),
         stderr: decoder.decode(new Uint8Array(result.stderr))
     };
+}
+
+async function installationDir() {
+    const result = await invoke('get_executable_file_path', {});
+    return result;
 }
 
 const repoUrl = "https://projects.blender.org/blender/blender.git";
@@ -32,8 +37,8 @@ async function gitpull() {
     setLoadInfo("Clearing cache...");
     enterCriticalState();
     
-    const appDir = await join(await localDataDir(), 'makemeablender', instance.name);
-    const gitDir = await join(await localDataDir(), 'makemeablender', instance.name, ".git");
+    const appDir = await join(await installationDir(), 'makemeablender', instance.name);
+    const gitDir = await join(await installationDir(), 'makemeablender', instance.name, ".git");
     var ssl = checkSSL() ? [] : ["-c", "http.sslVerify=false", "-c", "http.sslbackend=schannel"];
     if (getFastPull() && (await __TAURI__.fs.exists(gitDir))) {
         setLoadInfo("Resetting local to head...");
@@ -48,7 +53,7 @@ async function gitpull() {
         } catch (error) {
             console.log(error);
         }
-        const totalDir = await join(await localDataDir(), 'makemeablender');
+        const totalDir = await join(await installationDir(), 'makemeablender');
         logToConsole("Deleted previous pull.");
         logToConsole("Preparing to clone...");
         setLoadInfo("Cloning repository...");
@@ -68,18 +73,28 @@ async function gitpull() {
     }
     logToConsole("Pull complete!");
     exitCriticalState();
+    findLatestCommit(instance);
 }
 async function makebuild() {
-    setLoadInfo("Running make.bat...");
-    enterCriticalState();
-    logToConsole("Running make.bat");
+    var { localDataDir, join } = window.__TAURI__.path;
     var instance = getInstallations()[globalThis.selectedIndex];
     var folder = instance.name;
-
-    var { localDataDir, join } = window.__TAURI__.path;
-
-    const appDir = await join(await localDataDir(), 'makemeablender', instance.name);
-    const totalDir = await join(await localDataDir(), 'makemeablender');
+    const cbdDir = await join(await installationDir(), 'makemeablender', instance.name, 'compiled_binary');
+    enterCriticalState();
+    setLoadInfo("Deleting previous build...");
+    
+    
+    try {
+        await window.__TAURI__.fs.remove(cbdDir, { recursive: true });
+        logToConsole("Previous build deleted.");
+    } catch (error) {
+        logToConsole("No compiled_binary folder to delete.");
+    }
+    setLoadInfo("Running make.bat...");
+    logToConsole("Running make.bat");
+    
+    const appDir = await join(await installationDir(), 'makemeablender', instance.name);
+    const totalDir = await join(await installationDir(), 'makemeablender');
     const buildCommand = await execCommand('cmd', ['/C', 'start', 'cmd.exe', '.', '/C', 'make.bat'], appDir);
     if (buildCommand.stdout > 0) {
         logToConsole(buildCommand.stdout);
@@ -96,8 +111,8 @@ async function makebuild() {
     } else {
         setLoadInfo("Moving binaries...");
         logToConsole("Moving binaries...");
-        const binDir = await join(await localDataDir(), 'makemeablender', blenderDirectory.name);
-        const outDir = await join(await localDataDir(), 'makemeablender', instance.name, 'compiled_binary');
+        const binDir = await join(await installationDir(), 'makemeablender', blenderDirectory.name);
+        const outDir = await join(await installationDir(), 'makemeablender', instance.name, 'compiled_binary');
         const moveCommand = await execCommand('cmd', ['/C', 'move', '/Y', binDir, outDir], totalDir);
         if (moveCommand.stdout > 0) {
             logToConsole(moveCommand.stdout);
@@ -113,10 +128,10 @@ async function execbuild() {
     var instance = getInstallations()[globalThis.selectedIndex];
     enterCriticalState();
     var { localDataDir, join } = window.__TAURI__.path;
-    var binaryDir = await join(await localDataDir(), 'makemeablender', instance.name, 'compiled_binary', 'bin');
+    var binaryDir = await join(await installationDir(), 'makemeablender', instance.name, 'compiled_binary', 'bin');
     if (!(await __TAURI__.fs.exists(binaryDir))) {
         try {
-            var tmpDir = await join(await localDataDir(), 'makemeablender', instance.name, 'compiled_binary');
+            var tmpDir = await join(await installationDir(), 'makemeablender', instance.name, 'compiled_binary');
             var rDirectory = (await __TAURI__.fs.readDir(tmpDir)).find((dir) => {
                 return dir.isDirectory && !dir.isFile && !dir.isSymlink && dir.name.toLowerCase().startsWith("build_") && dir.name.toLowerCase().endsWith("_release");
             });

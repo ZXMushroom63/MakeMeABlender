@@ -4,7 +4,7 @@ var { Command } = window.__TAURI__.shell;
 var { mkdir } = window.__TAURI__.fs;
 
 
-const appDir = await join(await localDataDir(), 'makemeablender');
+const appDir = await join(await installationDir(), 'makemeablender');
 try {
   await mkdir(appDir);
 } catch (error) {
@@ -119,13 +119,13 @@ document.querySelector("#cleanup").addEventListener("click", async ()=>{
   enterCriticalState();
   var names = getInstallations().map((x)=>{return x.name.toLowerCase()});
   var { localDataDir, join } = window.__TAURI__.path;
-  const totalDir = await join(await localDataDir(), 'makemeablender');
+  const totalDir = await join(await installationDir(), 'makemeablender');
   var badFiles = (await __TAURI__.fs.readDir(totalDir)).filter((f) => {
     return !names.includes(f.name.toLowerCase());
   });
   for (let i = 0; i < badFiles.length; i++) {
     const file = badFiles[i];
-    const deletePath = await join(await localDataDir(), 'makemeablender', file.name);
+    const deletePath = await join(await installationDir(), 'makemeablender', file.name);
     logToConsole("Deleting " + file.name + "...");
     await window.__TAURI__.fs.remove(deletePath, { recursive: true });
   }

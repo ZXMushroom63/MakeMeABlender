@@ -6,7 +6,7 @@ function logToConsole(txt) {
 async function findLatestCommit(instance) {
     document.querySelector("#branchdate").innerText = "Pull to see the latest commits.";
     var { localDataDir, join } = window.__TAURI__.path;
-    const appDir = await join(await localDataDir(), 'makemeablender', instance.name);
+    const appDir = await join(await installationDir(), 'makemeablender', instance.name);
     if (execCommand) {
         document.querySelector("#branchdate").innerText = (await execCommand('git', ['log', '-1', '--pretty=format:"Last commit was %ar: %s"'], appDir)).stdout || "Pull to see the latest commits.";
     } else {

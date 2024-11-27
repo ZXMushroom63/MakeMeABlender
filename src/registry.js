@@ -40,7 +40,7 @@ function rebuildInstallationsList() {
                 setLoadInfo("Deleting...");
                 var l = getInstallations();
                 var deleted = l.splice(li.__idx, 1)[0];
-                const appDir = await join(await localDataDir(), 'makemeablender', deleted.name);
+                const appDir = await join(await installationDir(), 'makemeablender', deleted.name);
                 try {
                     logToConsole("Deleting " + deleted.name);
                     await window.__TAURI__.fs.remove(appDir, { recursive: true });

@@ -1,7 +1,7 @@
 var { localDataDir, join } = window.__TAURI__.path;
 var ignoreMissingLibs = false;
 async function missingLibs() {
-    const appDir = await join(await localDataDir(), 'makemeablender');
+    const appDir = await join(await installationDir(), 'makemeablender');
     document.querySelector("#libs_panel").classList.remove("hidden");
     var libraries = document.querySelectorAll("#libs_panel li");
     for (const library of libraries) {

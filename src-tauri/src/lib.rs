@@ -1,4 +1,4 @@
-use std::os::windows::process::CommandExt;
+use std::{os::windows::process::CommandExt, path::PathBuf};
 
 #[derive(serde::Serialize)]
 struct Output {
@@ -6,6 +6,7 @@ struct Output {
     stderr: Vec<u8>,
     status: i32,
 }
+
 
 #[tauri::command]
 async fn run_command(command: String, args: Vec<String>, dir: Option<String>) -> Output {
@@ -38,6 +39,21 @@ async fn run_command(command: String, args: Vec<String>, dir: Option<String>) ->
     }
 }
 
+
+#[tauri::command]
+fn get_executable_file_path() -> Result<PathBuf, String> {
+    match std::env::current_exe() {
+        Ok(path) => {
+            if let Some(parent) = path.parent() {
+                return Ok(parent.to_path_buf());
+            } else {
+                return Err(format!("signal_error"));
+            }
+        }
+        Err(_) => return Err(format!("signal_error")),
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -45,7 +61,7 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_cors_fetch::init())
         .plugin(tauri_plugin_fs::init())
-        .invoke_handler(tauri::generate_handler![run_command])
+        .invoke_handler(tauri::generate_handler![get_executable_file_path, run_command])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

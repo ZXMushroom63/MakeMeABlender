@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MakeMeABlender</title>
+    <script src="./installation_directory.js"></script>
     <script src="./stateful_mode.js"></script>
     <script src="./settings.js"></script>
     <script src="./news.js"></script>
@@ -97,6 +98,8 @@
       <label>News Update Interval (s): </label><input type="number" min="120" value="-1" id="newsUpdateInterval">
       <br>
       <label>Send News Notifications: </label><input type="checkbox" id="sendNotifications">
+      <br>
+      <label>Files stored in: </label><span class="badge" id="fileStoreLocation"></span>
       <br><br>
       <button onclick="location.reload()">Apply (resets UI)</button>
       <br><br><span class="badge">Made by ZXMushroom63</span>
