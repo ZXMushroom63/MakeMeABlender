@@ -65,7 +65,7 @@ function refreshPullRequests(branch, searchQuery) {
             li.innerHTML += `<span class="badge" title="Pull request is a draft">Draft</span>`;
         }
         if (pr.conflicting > 0) {
-            li.innerHTML += `<span class="badge" title="Pull request has ${pr.conflicting} conflicting files and cannot be merged.">🚨${pr.conflicting}</span>`;
+            li.innerHTML += `<span class="badge" title="Pull request has ${pr.conflicting} conflicting files and may not pull/build correctly.">🚨${pr.conflicting}</span>`;
         }
         li.addEventListener("click", ()=>{
             var installations = getInstallations();
