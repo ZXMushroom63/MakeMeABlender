@@ -1,3 +1,5 @@
+use std::os::windows::process::CommandExt;
+
 #[derive(serde::Serialize)]
 struct Output {
     stdout: Vec<u8>,
@@ -14,6 +16,7 @@ async fn run_command(command: String, args: Vec<String>, dir: Option<String>) ->
     if let Some(directory) = dir {
         cmd.current_dir(directory);
     }
+    cmd.creation_flags(0x08000000);
 
     // Set the arguments and execute the command
     let output = cmd.args(args).output();

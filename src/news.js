@@ -15,6 +15,7 @@ async function updateNews() {
     var outputPanel = document.querySelector("#news_content");
     outputPanel.innerHTML = "";
     var unreadCount = 0;
+    var appendedCount = 0;
     items.forEach(item => {
         var url = item.querySelector("link").textContent;
         if (!(  (url.includes("/pulls/") && !url.includes("issuecomment"))  ||  (url.includes("/commit/") && !url.includes("issuecomment") )  )) {
@@ -52,7 +53,7 @@ async function updateNews() {
                 
             }
         }
-
+        appendedCount++;
         outFeedItem.appendChild(title);
         outFeedItem.appendChild(document.createElement("br"));
         outFeedItem.appendChild(timeBadge);
@@ -62,6 +63,9 @@ async function updateNews() {
         document.querySelector("#news").innerText = `News (${unreadCount})`;
     } else {
         document.querySelector("#news").innerText = "News";
+    }
+    if (!(appendedCount > 0)) {
+        outputPanel.innerHTML = "No news right now.";
     }
 }
 async function newsUpdateLoop() {

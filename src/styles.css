@@ -149,10 +149,10 @@ html.loading .loader {
 }
 #final_controls {
   position: absolute;
-  bottom: 10px;
+  bottom: 2.5px;
   text-align: right;
   width: inherit;
-  overflow-x: scroll;
+  overflow-x: auto;
   overflow-y: hidden;
   white-space: nowrap;
   transform: translateX(-2rem);

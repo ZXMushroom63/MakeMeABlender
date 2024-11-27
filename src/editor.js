@@ -3,6 +3,16 @@ function logToConsole(txt) {
     c.innerText += "\r\n" + txt;
     c.scrollTop = c.scrollHeight;
 }
+async function findLatestCommit(instance) {
+    document.querySelector("#branchdate").innerText = "Pull to see the latest commits.";
+    var { localDataDir, join } = window.__TAURI__.path;
+    const appDir = await join(await localDataDir(), 'makemeablender', instance.name);
+    if (execCommand) {
+        document.querySelector("#branchdate").innerText = (await execCommand('git', ['log', '-1', '--pretty=format:"Last commit was %ar: %s"'], appDir)).stdout || "Pull to see the latest commits.";
+    } else {
+        document.querySelector("#branchdate").innerText = "Pull to see the latest commits.";
+    }
+}
 function updateEditor() {
     document.querySelector("#rightcontent").classList.remove("hidden");
     var idx = globalThis.selectedIndex;
@@ -14,6 +24,7 @@ function updateEditor() {
     globalThis.__liveInst = inst;
     document.querySelector("#branchselect").value = inst.branch;
     document.querySelector("#inst_id").innerText = inst.name;
+    findLatestCommit(inst);
     refreshPullRequests(document.querySelector("#branchselect").value, document.querySelector("#prsearch").value);
 }
 window.addEventListener("load", () => {
