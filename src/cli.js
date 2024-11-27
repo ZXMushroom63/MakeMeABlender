@@ -30,7 +30,7 @@ async function gitpull() {
     var { localDataDir, join } = window.__TAURI__.path;
 
     setLoadInfo("Clearing cache...");
-    document.documentElement.classList.add("loading");
+    enterCriticalState();
     
     const appDir = await join(await localDataDir(), 'makemeablender', instance.name);
     const gitDir = await join(await localDataDir(), 'makemeablender', instance.name, ".git");
@@ -58,17 +58,20 @@ async function gitpull() {
     setLoadInfo("Pulling features...");
     for (const prNumber of pullrequests) {
         logToConsole("Fetching #" + prNumber + "...");
-        const fetchCommand = await execCommand('git', ssl.concat(['fetch', '--allow-unrelated-histories', '--depth=1', 'origin', `pull/${prNumber}/head:pr-${prNumber}`]), appDir);
+        const fetchCommand = await execCommand('git', ssl.concat(['fetch', '--depth=1', 'origin', `pull/${prNumber}/head:pr-${prNumber}`]), appDir);
+        logToConsole(fetchCommand.stdout);
+        logToConsole(fetchCommand.stderr);
         logToConsole("Merging #" + prNumber + "...");
         const mergeCommand = await execCommand('git', ssl.concat(['merge', '-X', 'theirs', '--allow-unrelated-histories', `pr-${prNumber}`]), appDir);
         logToConsole(mergeCommand.stdout);
+        logToConsole(mergeCommand.stderr);
     }
     logToConsole("Pull complete!");
-    document.documentElement.classList.remove("loading");
+    exitCriticalState();
 }
 async function makebuild() {
     setLoadInfo("Running make.bat...");
-    document.documentElement.classList.add("loading")
+    enterCriticalState();
     logToConsole("Running make.bat");
     var instance = getInstallations()[globalThis.selectedIndex];
     var folder = instance.name;
@@ -103,18 +106,32 @@ async function makebuild() {
         }
         logToConsole("Moved binary. Ready to execute!");
     }
-    document.documentElement.classList.remove("loading");
+    exitCriticalState();
 }
 async function execbuild() {
     setLoadInfo("Running blender...");
     var instance = getInstallations()[globalThis.selectedIndex];
-    document.documentElement.classList.add("loading")
+    enterCriticalState();
     var { localDataDir, join } = window.__TAURI__.path;
-    const binaryDir = await join(await localDataDir(), 'makemeablender', instance.name, 'compiled_binary', 'bin');
+    var binaryDir = await join(await localDataDir(), 'makemeablender', instance.name, 'compiled_binary', 'bin');
+    if (!(await __TAURI__.fs.exists(binaryDir))) {
+        try {
+            var tmpDir = await join(await localDataDir(), 'makemeablender', instance.name, 'compiled_binary');
+            var rDirectory = (await __TAURI__.fs.readDir(tmpDir)).find((dir) => {
+                return dir.isDirectory && !dir.isFile && !dir.isSymlink && dir.name.toLowerCase().startsWith("build_") && dir.name.toLowerCase().endsWith("_release");
+            });
+            if (rDirectory) {
+                binaryDir = await join(tmpDir, rDirectory.name, 'bin');
+            }
+        } catch(e) {
+            logToConsole("Error while searching for secondary binary path.");
+        }
+    }
+    console.log(binaryDir);
     if (await __TAURI__.fs.exists(binaryDir)) {
         var targetFolder = (await __TAURI__.fs.readDir(binaryDir)).find(x=>x.isDirectory);
         if (targetFolder) {
-            const blenderDir = await join(await localDataDir(), 'makemeablender', instance.name, 'compiled_binary', 'bin', targetFolder.name);
+            const blenderDir = await join(binaryDir, targetFolder.name);
             logToConsole("Starting Blender...");
             execCommand('cmd', ['/C', 'start', 'blender.exe'], blenderDir).then(res => {
                 logToConsole("Blender process exited!");
@@ -125,7 +142,7 @@ async function execbuild() {
     }
     
 
-    document.documentElement.classList.remove("loading");
+    exitCriticalState();
 }
 window.addEventListener("load", () => {
     document.querySelector("#gitpull").addEventListener("click", gitpull);

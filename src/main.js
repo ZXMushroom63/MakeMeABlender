@@ -90,14 +90,14 @@ var elapsedTime = Date.now() - parseInt(last_pr_fetch || 0);
 var maxElapsedTime = 240 * 60 * 1000; //240 minutes
 if (elapsedTime > maxElapsedTime) {
   setLoadInfo("Indexing pull requests...");
-  document.documentElement.classList.add("loading");
+  enterCriticalState();
   try {
     PRs = await indexPullRequests();
   } catch (error) {
     logToConsole("Failed to fetch pull requests! Using cache.");
     PRs = JSON.parse(localStorage.getItem("cache_store") || "[]");
   }
-  document.documentElement.classList.remove("loading");
+  exitCriticalState();
 } else {
   PRs = JSON.parse(localStorage.getItem("cache_store") || "[]");
   logToConsole("Loaded PRs from cache.");
@@ -116,7 +116,7 @@ document.querySelector("#forceindex").addEventListener("click", ()=>{
 
 document.querySelector("#cleanup").addEventListener("click", async ()=>{
   setLoadInfo("Cleaning up application folder...");
-  document.documentElement.classList.add("loading");
+  enterCriticalState();
   var names = getInstallations().map((x)=>{return x.name.toLowerCase()});
   var { localDataDir, join } = window.__TAURI__.path;
   const totalDir = await join(await localDataDir(), 'makemeablender');
@@ -130,5 +130,5 @@ document.querySelector("#cleanup").addEventListener("click", async ()=>{
     await window.__TAURI__.fs.remove(deletePath, { recursive: true });
   }
   logToConsole("Cleaned up application folder!");
-  document.documentElement.classList.remove("loading");
+  exitCriticalState();
 });

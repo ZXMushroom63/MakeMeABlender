@@ -36,7 +36,7 @@ function rebuildInstallationsList() {
             
             e.stopPropagation();
             if (window.confirm("Delete blender installation?")) {
-                document.documentElement.classList.add("loading");
+                enterCriticalState();
                 setLoadInfo("Deleting...");
                 var l = getInstallations();
                 var deleted = l.splice(li.__idx, 1)[0];
@@ -50,7 +50,7 @@ function rebuildInstallationsList() {
                 }
                 storeInstallations(l);
                 rebuildInstallationsList();
-                document.documentElement.classList.remove("loading");
+                exitCriticalState();
             }
         });
         li.addEventListener("click", ()=>{

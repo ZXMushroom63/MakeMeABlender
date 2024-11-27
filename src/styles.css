@@ -152,6 +152,9 @@ html.loading .loader {
   bottom: 10px;
   text-align: right;
   width: inherit;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
   transform: translateX(-2rem);
 }
 #prcontainer {

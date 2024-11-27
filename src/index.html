@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MakeMeABlender</title>
+    <script src="./stateful_mode.js"></script>
     <script src="./settings.js"></script>
     <script src="./news.js"></script>
     <script src="./editor.js"></script>
@@ -52,6 +53,7 @@
               Welcome to MakeMeABlender v1.0!
             </div>
             <div id="final_controls">
+              <button style="margin-left: 2rem; margin-right: 1rem; float: left; position: relative; left: 0rem; top: calc(1rem - 3.5px);" onclick="document.querySelector('#console').innerText = 'Cleared console.';">Clear Console</button>
               <span class="badge" style="border: 1px solid white;">
                 Fast Pull
                 <input type="checkbox" id="fastpull" checked>
