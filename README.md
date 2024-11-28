@@ -13,3 +13,5 @@ Features:
 ![Screenshot of the UI](https://cloud-nnu7kv8ki-hack-club-bot.vercel.app/0image.png)
 
 
+Download on the releases tab.
+
