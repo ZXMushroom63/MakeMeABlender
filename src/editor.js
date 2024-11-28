@@ -8,7 +8,7 @@ async function findLatestCommit(instance) {
     var { localDataDir, join } = window.__TAURI__.path;
     const appDir = await join(await installationDir(), 'makemeablender', instance.name);
     if (execCommand) {
-        var stdout = (await execCommand('git', ['log', '-1', '--pretty=format:"Last commit was %ar: %s"'], appDir)).stdout;
+        var stdout = (await execCommand('git', ['log', '-1', '--pretty=format:"Last commit was %ar: %s"', `origin/${instance.branch}`], appDir)).stdout;
         document.querySelector("#branchdate").innerText = stdout ? stdout.substring(1, stdout.length - 1) : "Pull to see the latest commits.";
     } else {
         document.querySelector("#branchdate").innerText = "Pull to see the latest commits.";
